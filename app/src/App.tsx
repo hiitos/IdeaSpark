@@ -1,16 +1,22 @@
-import React, { useEffect , useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { fetchTest } from './features/data';
 
-function App() {
+interface ResponseData {
+  status: number;
+  body: string; // `body`はJSON文字列を受け取る
+}
 
-  const [data, setData] = useState<any>(null);
+function App() {
+  const [data, setData] = useState<ResponseData | null>(null);
 
   useEffect(() => {
     fetchTest("test").then((data) => {
-      console.log(data);
-      setData(data);
+      // console.log(data);
+      const responseData = data as ResponseData;
+      setData(responseData);
+      // console.log(responseData.body);
     });
   }, []);
 
@@ -29,9 +35,12 @@ function App() {
         >
           Learn React
         </a>
-        <p>
-          {data}
-        </p>
+        {/* JSON文字列をパースしてリストとして表示 */}
+        <ul>
+          {data ? JSON.parse(data.body).map((item: string, index: number) => (
+            <li key={index}>{item}</li>
+          )) : 'Loading...'}
+        </ul>
       </header>
     </div>
   );
